@@ -1,0 +1,44 @@
+{
+  "name": "explorer-backend",
+  "version": "1.0",
+  "description": "A backend application for your altcoin block explorer",
+  "main": "./src/main.ts",
+  "type": "module",
+  "scripts": {
+    "build": "npm install && tsc",
+    "start": "tsx ./build/src/main.js",
+    "dev": "tsx watch ./src/main.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.10",
+    "dotenv": "^16.3.1",
+    "express": "4.18.2",
+    "express-async-errors": "^3.1.1",
+    "http-status-codes": "2.2.0",
+    "mongodb": "^6.1.0",
+    "mongoose": "7.5.2",
+    "pino": "^8.16.1",
+    "pino-pretty": "^10.2.3",
+    "prom-client": "^15.0.0",
+    "qr-image": "^3.2.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
+    "ts-node": "^10.9.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.14",
+    "@types/express": "^4.17.17",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^20.6.2",
+    "@types/swagger-jsdoc": "^6.0.2",
+    "@types/swagger-ui-express": "^4.1.5",
+    "cross-env": "^7.0.3",
+    "tsx": "^3.12.10",
+    "typescript": "^5.2.2"
+  }
+}

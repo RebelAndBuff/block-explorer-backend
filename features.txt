@@ -1,0 +1,20 @@
+- Search bar
+  - Search by address
+  - Search by block (block height, block hash)
+  - Search by transactions
+
+- Coin stat section
+  - BTC price
+  - USD price
+  - Market cap
+  - Hashrate
+  - Difficulty
+  - Supply
+
+- Latest blocks
+  - Up to 1,000 blocks shown
+  - Start with 5-10 blocks shown
+  - Increment by 10 -> 100 -> 500 -> 1,000 using a "Show more" button
+  - Each block should show: Block height, timestamp, amount of transactions, amount of coins out
+  - Block height should link to specific block
+ 
