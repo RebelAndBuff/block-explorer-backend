@@ -1,6 +1,10 @@
 import express, { Request, Response } from 'express';
 const routes = express.Router();
-import { getBlockHandler, getLatestBlocksHandler } from './handlers.js';
+import {
+  getBlockHandler,
+  getLatestBlocksHandler,
+  getCoinStatsHandler,
+} from './handlers.js';
 
 /**
  * @openapi
@@ -38,5 +42,6 @@ routes.get('/healthcheck', (_req: Request, res: Response) =>
  */
 routes.get('/latestblocks', getLatestBlocksHandler);
 routes.get('/block', getBlockHandler);
+routes.get('/coinstats', getCoinStatsHandler);
 
 export default routes;

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import db, { getBlock } from '../lib/database.js';
 import BadRequestError from '../errors/BadRequestError.js';
 import { isEmpty } from '../utils/index.js';
+import rpc from '../lib/rpc.js';
 
 export async function getLatestBlocksHandler(req: Request, res: Response) {
   const page = parseInt(req.query.page as string) || 1;
@@ -13,6 +14,36 @@ export async function getLatestBlocksHandler(req: Request, res: Response) {
 
   const latestBlocks = await db.getLatestBlocks(amount);
   return res.status(200).send(latestBlocks);
+}
+
+export async function getCoinStatsHandler(req: Request, res: Response) {
+  // TODO: catch fetch errors
+  const marketFetchResponse = await fetch(
+    'https://api.freiexchange.com/public/ticker/FRC',
+  );
+  const { FRC_BTC } = await marketFetchResponse.json();
+  const [marketData] = FRC_BTC;
+  const { last: priceInBTC } = marketData;
+
+  const bitcoinFetchResponse = await fetch(
+    'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd',
+  );
+  const { bitcoin } = await bitcoinFetchResponse.json();
+
+  const txoutsetinfo = await rpc.fetchTxoutsetinfo();
+  const networkhashps = await rpc.fetchNetworkhashps();
+  const difficulty = await rpc.fetchDifficulty();
+
+  const coinStats = {
+    coin_hashrate: networkhashps,
+    coin_supply: txoutsetinfo.total_value,
+    coin_btc: priceInBTC,
+    coin_usd: priceInBTC * bitcoin.usd,
+    coin_difficulty: difficulty,
+    coin_marketcap: txoutsetinfo.total_value * (priceInBTC * bitcoin.usd),
+  };
+
+  return res.status(200).send(coinStats);
 }
 
 export async function getBlockHandler(req: Request, res: Response) {

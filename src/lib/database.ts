@@ -11,7 +11,7 @@ export async function createBlockHeader(index: number) {
       height: blockstats.height,
       hash: blockstats.blockhash,
       date: new Date(blockstats.time * 1000), // we multipy it by 1000 becuase it's an EPOCH time
-      transactions: blockstats.txs,
+      transactions: blockstats.txs - 1, //  we substract one because the coinbase tx counts as 2 separate txs for some reason.
       valueOut: blockstats.total_out * freitoshi,
       coinsCreated: blockstats.subsidy * freitoshi,
     };
@@ -57,7 +57,7 @@ export async function createBlock(index: number) {
   };
 
   const serializedTxs =
-  // if the amount of txs is bigger than 2, there are more txs than the coinbase. (coinbase tx takes the first two txs)
+    // if the amount of txs is bigger than 2, there are more txs than the coinbase. (coinbase tx takes the first two txs)
     block.tx.length > 2
       ? [
           coinbaseTx,
@@ -86,7 +86,7 @@ export async function createBlock(index: number) {
     height: block.height,
     hash: block.hash,
     date: new Date(block.time * 1000), // block date is in epoch time
-    nTx: block.nTx - 1, //  we substract one because the coinbase tx counts as 2 separate txs for some reason.
+    nTx: block.nTx - 1,
     difficulty: block.auxdifficulty,
     prevBlockhash: block.previousblockhash,
     valueOut: blockstats.total_out * freitoshi,
