@@ -4,7 +4,6 @@ import db from '../lib/database.js';
 import rpc from '../lib/rpc.js';
 import Block from '../models/Block.js';
 import BlockHeader from '../models/BlockHeader.js';
-import { Worker } from 'cluster';
 
 let mode = 'update';
 let database = 'index';
@@ -80,10 +79,10 @@ export async function updateBlockHeaders(cb) {
   // find last block header height/index saved and start updating from there
   let amountOfBlockHeadersToProcess: number = 500;
   const blockcount = await rpc.fetchBlockcount();
+  console.log(blockcount);
 
   const blocksHeadersExist = await BlockHeader.findOne();
   if (blocksHeadersExist) {
-    // TODO: keep only 500 blocks in the db, remove the rest - we don't need them
     const lastBlockHeaderSaved = await BlockHeader.find()
       .sort('-height')
       .limit(1)
@@ -108,8 +107,18 @@ export async function updateBlockHeaders(cb) {
     console.log('Saving blocks...');
     console.time('Saving time');
     await BlockHeader.insertMany(blockHeaders);
+    const amountOfBlockHeadersInDB = await BlockHeader.countDocuments({});
+    const amountOfBlockHeadersToKeep = 500;
+    if (amountOfBlockHeadersInDB > 500) {
+      // keep only 500 blocks in the db to save space
+      console.log('Deleting unused block headers...');
+      const { deletedCount } = await BlockHeader.deleteMany({
+        height: { $lt: blockcount - amountOfBlockHeadersToKeep },
+      });
+      console.log(`${deletedCount} block(s) deleted`);
+    }
     console.timeEnd('Saving time');
-    console.log(`${blockHeaders.length} block headers saved!`);
+    console.log(`${blockHeaders.length} block header(s) saved!`);
   } else {
     console.log('Block headers are up to date.');
     return cb();
@@ -131,7 +140,6 @@ export async function updateBlocks() {
   const blocksExist = await Block.findOne();
   if (blocksExist) {
     const lastBlockSaved = await Block.find().sort('-height').limit(1).exec();
-    console.log(lastBlockSaved[0].height);
     initialIndex = lastBlockSaved[0].height + 1;
   }
 
